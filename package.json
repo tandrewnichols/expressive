@@ -1,7 +1,7 @@
 {
   "name": "expressive",
   "version": "0.0.1",
-  "description": "Adds environment-specific hooks for express apps",
+  "description": "Adds environment-specific hooks to express apps",
   "main": "./lib/expressive.js",
   "scripts": {
     "test": "grunt"
