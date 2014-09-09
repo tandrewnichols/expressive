@@ -89,3 +89,76 @@ describe 'expressive', ->
           testing: 'test'
       And -> @app.dev.use 'foo', 'bar'
       Then -> expect(@app.use.called).to.be.false()
+
+  describe '2nd arg is an array', ->
+    context 'use is a function', ->
+      Given -> @env = process.env.NODE_ENV
+      afterEach -> process.env.NODE_ENV = @env
+      Given -> process.env.NODE_ENV = 'dev'
+      When -> @subject @app, [ 'dev', 'test']
+      Then -> expect(@app.dev.use).to.be.a 'function'
+      And -> expect(@app.test.use).to.be.a 'function'
+
+    context '[env].use calls main use', ->
+      Given -> @env = process.env.NODE_ENV
+      afterEach -> process.env.NODE_ENV = @env
+      Given -> process.env.NODE_ENV = 'dev'
+      When -> @subject @app, [ 'dev', 'test']
+      And -> @app.dev.use 'foo', 'bar'
+      Then -> expect(@app.use).to.have.been.calledWith 'foo', 'bar'
+
+    context 'not the right env', ->
+      Given -> @env = process.env.NODE_ENV
+      afterEach -> process.env.NODE_ENV = @env
+      Given -> process.env.NODE_ENV = 'banana'
+      When -> @subject @app, ['dev', 'test']
+      And -> @app.dev.use 'foo', 'bar'
+      Then -> expect(@app.use.called).to.be.false()
+
+  describe 'envs is string', ->
+    context 'use is a function', ->
+      Given -> @env = process.env.NODE_ENV
+      afterEach -> process.env.NODE_ENV = @env
+      Given -> process.env.NODE_ENV = 'dev'
+      When -> @subject @app, 'dev'
+      Then -> expect(@app.dev.use).to.be.a 'function'
+
+    context '[env].use calls main use', ->
+      Given -> @env = process.env.NODE_ENV
+      afterEach -> process.env.NODE_ENV = @env
+      Given -> process.env.NODE_ENV = 'dev'
+      When -> @subject @app, 'dev'
+      And -> @app.dev.use 'foo', 'bar'
+      Then -> expect(@app.use).to.have.been.calledWith 'foo', 'bar'
+
+    context 'not the right env', ->
+      Given -> @env = process.env.NODE_ENV
+      afterEach -> process.env.NODE_ENV = @env
+      Given -> process.env.NODE_ENV = 'banana'
+      When -> @subject @app, 'dev'
+      And -> @app.dev.use 'foo', 'bar'
+      Then -> expect(@app.use.called).to.be.false()
+
+  describe 'envs is string in opts', ->
+    context 'use is a function', ->
+      Given -> @env = process.env.NODE_ENV
+      afterEach -> process.env.NODE_ENV = @env
+      Given -> process.env.NODE_ENV = 'dev'
+      When -> @subject @app, { envs: 'dev' }
+      Then -> expect(@app.dev.use).to.be.a 'function'
+
+    context '[env].use calls main use', ->
+      Given -> @env = process.env.NODE_ENV
+      afterEach -> process.env.NODE_ENV = @env
+      Given -> process.env.NODE_ENV = 'dev'
+      When -> @subject @app, { envs: 'dev' }
+      And -> @app.dev.use 'foo', 'bar'
+      Then -> expect(@app.use).to.have.been.calledWith 'foo', 'bar'
+
+    context 'not the right env', ->
+      Given -> @env = process.env.NODE_ENV
+      afterEach -> process.env.NODE_ENV = @env
+      Given -> process.env.NODE_ENV = 'banana'
+      When -> @subject @app, { envs: 'dev' }
+      And -> @app.dev.use 'foo', 'bar'
+      Then -> expect(@app.use.called).to.be.false()

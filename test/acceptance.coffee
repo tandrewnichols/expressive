@@ -39,3 +39,25 @@ describe 'acceptance', ->
     Given -> @app.dev.use '/foo', @route
     When (done) -> request(@app).get('/foo').end (err, res, body) -> done()
     Then -> expect(@route).to.be.have.been.called
+
+  describe '2nd arg is an array', ->
+    Given -> process.env.NODE_ENV = 'development'
+    Given -> @expressive @app, ['development', 'test']
+    Given -> @app.development.use '/foo', @route
+    When (done) -> request(@app).get('/foo').end (err, res, body) -> done()
+    Then -> expect(@route).to.be.have.been.called
+
+  describe 'envs is string', ->
+    Given -> process.env.NODE_ENV = 'development'
+    Given -> @expressive @app, 'development'
+    Given -> @app.development.use '/foo', @route
+    When (done) -> request(@app).get('/foo').end (err, res, body) -> done()
+    Then -> expect(@route).to.be.have.been.called
+
+  describe 'envs is string in opts', ->
+    Given -> process.env.NODE_ENV = 'development'
+    Given -> @expressive @app,
+      envs: 'development'
+    Given -> @app.development.use '/foo', @route
+    When (done) -> request(@app).get('/foo').end (err, res, body) -> done()
+    Then -> expect(@route).to.be.have.been.called
