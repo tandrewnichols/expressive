@@ -1,12 +1,16 @@
+_ = require 'lodash'
+
 describe 'expressive', ->
   Given -> @app =
     use: sinon.stub()
+    foo: sinon.stub()
+    bar: sinon.stub()
   Given -> @subject = require '../lib/expressive'
 
   describe 'no env list', ->
     context 'use is a function', ->
       When -> @subject @app
-      Then -> expect(@app.development.use).to.be.a 'function'
+      Then -> expect(_.functions(@app.development).sort()).to.deep.equal ['bar', 'foo', 'use']
 
     context '[env].use calls main use', ->
       Given -> @env = process.env.NODE_ENV
@@ -160,5 +164,20 @@ describe 'expressive', ->
       afterEach -> process.env.NODE_ENV = @env
       Given -> process.env.NODE_ENV = 'banana'
       When -> @subject @app, { envs: 'dev' }
+      And -> @app.dev.use 'foo', 'bar'
+      Then -> expect(@app.use.called).to.be.false()
+
+  describe 'with env as 3rd arg', ->
+    context 'use is a function', ->
+      When -> @subject @app, 'dev', 'dev'
+      Then -> expect(@app.dev.use).to.be.a 'function'
+
+    context '[env].use calls main use', ->
+      When -> @subject @app, 'dev', 'dev'
+      And -> @app.dev.use 'foo', 'bar'
+      Then -> expect(@app.use).to.have.been.calledWith 'foo', 'bar'
+
+    context 'not the right env', ->
+      When -> @subject @app, 'dev', 'banana'
       And -> @app.dev.use 'foo', 'bar'
       Then -> expect(@app.use.called).to.be.false()

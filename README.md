@@ -20,9 +20,64 @@ app.use('/normal-route', function(req, res, next) {
   next();
 });
 
-app.development.use('/dev-only-route', function(req, res, next) {
+app.development.get('/dev-only-route', function(req, res, next) {
   next();
 });
 ```
 
-When you call expressive and pass in an express app, it will add environment specific hooks that you can use to add routes only in certain environments. By default, it will use `['development']` as the environment list, but you can pass a list of environments as a second argument.
+When you call `expressive` and pass in an express app, it will add environment specific hooks that you can use for specific environments only. By default, it will use `['development']` as the environment list, but you can pass an array of environments as a second argument (or a single string if you only setting up one environment), or an options object (outlined below).
+
+This is similar to wrapping `app` calls in checks against the environment, but I've found that this method makes an app easier to read because all the route definitions are parallel.
+
+### With an array
+
+```javascript
+expressive(app, ['development', 'test']);
+```
+
+### With a string
+
+```javascript
+expressive(app, 'development');
+```
+
+### With Options
+
+You can specify the following options to change the default behavior:
+
+#### Envs
+
+The aforementioned list of environments
+
+```javascript
+// "envs" can also be a string here
+expressive(app, { envs: ['development', 'test'] });
+```
+
+#### Env
+
+The current environment. Defaults to `process.env.NODE_ENV`.
+
+```javascript
+expressive(app, { env: nconf.get('NODE_ENV') });
+```
+
+Additionally, you can pass this env as a third parameter, which can help keep the syntax short.
+
+```javascript
+expressive(app, 'development', nconf.get('NODE_ENV'));
+```
+
+#### Alias
+
+If `app.development.use` seems long, you can provide environment aliases to shorten it.
+
+```javascript
+expressive(app, { alias: { development: 'dev' } });
+```
+
+Then you can just use
+
+```javascript
+app.dev.use(/*args*/);
+```
