@@ -46,5 +46,12 @@
     "sinon": "^1.10.3",
     "supertest": "^0.13.0",
     "task-master": "^2.0.1"
+  },
+  "config": {
+    "blanket": {
+      "pattern": [
+        "expressive/lib"
+      ]
+    }
   }
 }
