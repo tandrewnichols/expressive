@@ -4,8 +4,7 @@
   "description": "Adds environment-specific hooks to express apps",
   "main": "./lib/expressive.js",
   "scripts": {
-    "test": "grunt",
-    "publish": "if echo $USERNAME | grep -cq 'anichols'; then publisher run; fi"
+    "test": "grunt"
   },
   "repository": {
     "type": "git",
