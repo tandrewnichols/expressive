@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mantacode/expressive.png)](https://travis-ci.org/mantacode/expressive) [![downloads](http://img.shields.io/npm/dm/expressive.svg)](https://npmjs.org/package/expressive) [![npm](http://img.shields.io/npm/v/expressive.svg)](https://npmjs.org/package/expressive) [![Code Climate](https://codeclimate.com/github/mantacode/expressive/badges/gpa.svg)](https://codeclimate.com/github/mantacode/expressive) [![Test Coverage](https://codeclimate.com/github/mantacode/expressive/badges/coverage.svg)](https://codeclimate.com/github/mantacode/expressive) [![dependencies](https://david-dm.org/mantacode/expressive.png)](https://david-dm.org/mantacode/expressive)
+[![Build Status](https://travis-ci.org/tandrewnichols/expressive.png)](https://travis-ci.org/tandrewnichols/expressive) [![downloads](http://img.shields.io/npm/dm/expressive.svg)](https://npmjs.org/package/expressive) [![npm](http://img.shields.io/npm/v/expressive.svg)](https://npmjs.org/package/expressive) [![Code Climate](https://codeclimate.com/github/tandrewnichols/expressive/badges/gpa.svg)](https://codeclimate.com/github/tandrewnichols/expressive) [![Test Coverage](https://codeclimate.com/github/tandrewnichols/expressive/badges/coverage.svg)](https://codeclimate.com/github/tandrewnichols/expressive) [![dependencies](https://david-dm.org/tandrewnichols/expressive.png)](https://david-dm.org/tandrewnichols/expressive)
 
 [![NPM info](https://nodei.co/npm/expressive.png?downloads=true)](https://nodei.co/npm/expressive.png?downloads=true)
 
@@ -11,10 +11,12 @@
 ## Usage
 
 ```javascript
-var expressive = require('expressive');
 var express = require('express');
 var app = express();
-expressive(app);
+var expressive = require('expressive');
+
+// nconf setup not pictured
+expressive(app, nconf.get('NODE_ENV')).env('development');
 
 app.use('/normal-route', function(req, res, next) {
   next();
@@ -25,59 +27,47 @@ app.development.get('/dev-only-route', function(req, res, next) {
 });
 ```
 
-When you call `expressive` and pass in an express app, it will add environment specific hooks that you can use for specific environments only. By default, it will use `['development']` as the environment list, but you can pass an array of environments as a second argument (or a single string if you only setting up one environment), or an options object (outlined below).
+Expressive installs environment-specific hooks in your express app, which essentially eliminates the need to do something like
 
-This is similar to wrapping `app` calls in checks against the environment, but I've found that this method makes an app easier to read because all the route definitions are parallel.
-
-### With an array
-
-```javascript
-expressive(app, ['development', 'test']);
+```
+if (process.env.NODE_ENV === 'development') {
+  app.use(/* some dev route */)
+}
 ```
 
-### With a string
+Of course, you could just use if statements like this, but I've found that expressive makes an app easier to read because all the route definitions are parallel. Additionally, testing is _slightly_ easier because you don't have to specify a `describe` for each environment. You can just assert that `app.environmentName` exists and, if you're into this kind of thing, that it gets called with the appropriate routes and handlers.
 
-```javascript
-expressive(app, 'development');
+## Api
+
+Expressive exports a single function that takes two arguments: your express app and, optionally, the current environment (defaulting to `process.env.NODE_ENV`). It returns an object with a single method: `.env`.
+
+```
+expressive(app)
 ```
 
-### With Options
+or
 
-You can specify the following options to change the default behavior:
-
-#### Envs
-
-The aforementioned list of environments
-
-```javascript
-// "envs" can also be a string here
-expressive(app, { envs: ['development', 'test'] });
+```
+expressive(app, currentEnvironment)
 ```
 
-#### Env
+### .env
 
-The current environment. Defaults to `process.env.NODE_ENV`.
+The `.env` method also takes two arguments: the name of the environment to add hooks for and an optional alias for that environment. This method returns the same object (`this`) so you can chain your `.env` calls.
 
-```javascript
-expressive(app, { env: nconf.get('NODE_ENV') });
+## Example
+
+```
+var express = require('express');
+var app = express();
+var expressive = require('expressive');
+
+expressive(app)
+  .env('test')
+  .env('smoktest')
+  .env('development', 'dev') // Alias "dev" allows you to do app.dev.use instead of app.development.use
 ```
 
-Additionally, you can pass this env as a third parameter, which can help keep the syntax short.
+## Contributing
 
-```javascript
-expressive(app, 'development', nconf.get('NODE_ENV'));
-```
-
-#### Alias
-
-If `app.development.use` seems long, you can provide environment aliases to shorten it.
-
-```javascript
-expressive(app, { alias: { development: 'dev' } });
-```
-
-Then you can just use
-
-```javascript
-app.dev.use(/*args*/);
-```
+Please see [the contribution guidelines](CONTRIBUTING.md).
