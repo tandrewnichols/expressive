@@ -54,7 +54,7 @@ module.exports = (grunt) => {
       }
     },
     shell: {
-      codeclimate: 'codeclimate-test-reporter < coverage/lcov.info'
+      codeclimate: 'npm run codeclimate'
     },
     open: {
       coverage: {
