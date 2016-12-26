@@ -28,7 +28,9 @@ module.exports = (grunt) => {
           dir: 'coverage',
           x: ['**/node_modules/**'],
           simple: {
-            args: ['grunt', 'mochaTest:test']
+            cmd: 'cover',
+            args: ['grunt', 'mochaTest:test'],
+            rawArgs: ['--', '--color']
           }
         }
       }
