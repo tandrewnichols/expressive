@@ -1,5 +1,5 @@
 module.exports = (grunt) => {
-  grunt.loadNpmTasks('grunt-contrib-jshint')
+  grunt.loadNpmTasks('grunt-eslint')
   grunt.loadNpmTasks('grunt-mocha-test')
   grunt.loadNpmTasks('grunt-travis-matrix')
   grunt.loadNpmTasks('grunt-shell')
@@ -7,18 +7,14 @@ module.exports = (grunt) => {
   grunt.loadNpmTasks('grunt-open')
 
   grunt.initConfig({
-    jshint: {
-      options: {
-        reporter: require('jshint-stylish'),
-        eqeqeq: true,
-        esversion: 6,
-        indent: true,
-        newcap: true,
-        quotmark: 'single',
-        boss: true,
-        asi: true
-      },
-      all: ['lib/**/*.js']
+    eslint: {
+      lib: {
+        options: {
+          configFile: '.eslint.json',
+          format: 'node_modules/eslint-codeframe-formatter'
+        },
+        src: ['lib/**/*.js']
+      }
     },
     istanbul: {
       cover: {
@@ -64,7 +60,7 @@ module.exports = (grunt) => {
   });
 
   grunt.registerTask('mocha', ['mochaTest:test'])
-  grunt.registerTask('default', ['jshint:all', 'mocha'])
+  grunt.registerTask('default', ['eslint:lib', 'mocha'])
   grunt.registerTask('coverage', ['istanbul:cover'])
-  grunt.registerTask('ci', ['jshint:all', 'mocha', 'travisMatrix:v4'])
+  grunt.registerTask('ci', ['eslint:lib', 'mocha', 'travisMatrix:v4'])
 }
